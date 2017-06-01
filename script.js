@@ -5,7 +5,6 @@
 var fps = 60;
 var Canvas_Width = 640;
 var Canvas_Heigth = 640;
-//var score = 0;
 
 //**********************************
 //Player Unit
@@ -112,12 +111,13 @@ function Enemy(I) {
 		I.xVelocity = 5 * Math.sin(I.age * Math.PI / 140);
 	
 		I.age++;
-        I.yVelocity = I.yVelocity + 0.06;
+        I.yVelocity = I.yVelocity + (Math.random() / 4);
 		I.active = I.active && I.inBounds();
 	};
         
 	I.explode = function() {
 		this.active = false;
+		score = score + 5;
 	};
 		return I;
 };
@@ -172,7 +172,7 @@ function update() {
 		return enemy.active;
 	});
 	
-	if(Math.random() < 0.07) {
+	if(Math.random() < 0.10) {
     enemies.push(Enemy());
 	}
 }
@@ -204,6 +204,7 @@ playerUnit.midpoint = function() {
 
 function draw() {
 	canvas.clearRect(0, 0, Canvas_Width, Canvas_Heigth);
+	
 	playerUnit.draw();
 	
 	playerBullets.forEach(function(bullet) {
@@ -212,9 +213,13 @@ function draw() {
 	
 	enemies.forEach(function(enemy) {
         enemy.draw();
-    });   
-	//gOver.draw();
-	//drawScore();
+    });
+	
+	if(gOver.over){
+		gOver.sprite.draw(canvas,0,0);
+	}
+	myScore();
+	scoring();
 }
 
 //**********************************
@@ -255,50 +260,35 @@ playerUnit.explode = function() {
 //Game Over
 //**********************************
 
-var gOver = {
-	color: "black",
-	x: 0,
-	y: 0,
-	width: jqueryCanvas.width,
-	height: jqueryCanvas.height,
-	draw: function(){
-		canvas.fillStyle = this.color;
-		canvas.fillRect(this.x, this.y, this.width, this.height);
-		this.sprite.draw(canvas,0,0);
-	}
-}
-
-
-gOver.sprite = new Sprite("GameoverSMB");
-
-gOver.draw = function() {
-	this.sprite.draw(canvas, this.x, this.y);
-}
+var gOver = {};
+gOver.over = false;
+gOver.sprite = Sprite("GameoverSMB", 0, 0, 640, 376);
 
 function gameOver() {
-	gOver.draw();
 	clearInterval(gameLoop);
+	clearInterval(scoring);
+	gOver.over = true;
 };
 
-//**********************************
-//Reset
-//**********************************
-
-function reset() {
-  enemies = [];
-  player.reset();
-}
 
 //**********************************
 //Score
 //**********************************
 	
-/*var score = {
-	color: "white"
-	draw: function() {
-		canvas.fillStyle = this.color;
-		canvas.fillText("Score: "+n)
-		this.draw(canvas, 10, 10);
+var score = 0;
+var tick = 0;
+var tickMax = 60;
+function myScore() {
+	canvas.font = "20px Arial";
+	canvas.fillStyle = "white";
+	canvas.fillText("Score: " + score,10,30);
+}
+
+function scoring() {
+	if(tick < tickMax){
+		tick++;
+	} else {	
+		score = score + 1;
+		tick = 0;
 	}
-	
-}*/
+}
