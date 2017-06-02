@@ -14,8 +14,10 @@ var playerUnit = {
 	color: "white",
 	x: 310,
 	y: 560,
-	width: 40,
-	height: 40,
+	width: 30,
+	height: 27,
+	cooldown: 0,
+	cooldown_time: 20,
 	draw: function(){
 		canvas.fillStyle = this.color;
 		canvas.fillRect(this.x, this.y, this.width, this.height);
@@ -91,8 +93,8 @@ function Enemy(I) {
 	I.xVelocity = 0;
 	I.yVelocity = 2;
         
-	I.width = 30;
-	I.height = 30;
+	I.width = 25;
+	I.height = 25;
         
 	I.inBounds = function() {
 		return I.x >= 0 && I.x <= Canvas_Width &&
@@ -108,13 +110,37 @@ function Enemy(I) {
 	I.update = function() {
 		I.x += I.xVelocity;
 		I.y += I.yVelocity;    
-		I.xVelocity = 5 * Math.sin(I.age * Math.PI / 140);
+		I.xVelocity = 6 * Math.sin(I.age * Math.PI / 140);
 	
 		I.age++;
-        I.yVelocity = I.yVelocity + (Math.random() / 4);
+        I.yVelocity = I.yVelocity + (Math.random() / 9);
 		I.active = I.active && I.inBounds();
+	
+		if(score > 100 && score <= 199){
+			I.yVelocity = I.yVelocity + 0.02;
+		}
+	
+		if(score > 200 && score <= 299){
+			I.yVelocity = I.yVelocity + 0.07;
+			I.xVelocity = 7 * Math.cos(I.age * Math.PI / 60);
+		}
+		
+		if(score > 300 && score <= 399){
+			I.yVelocity = I.yVelocity + 0.08;
+			I.xVelocity = 6 * Math.sin(I.age * Math.PI / 140);
+		}
+		
+		if(score > 400 && score <= 499){
+			I.yVelocity = I.yVelocity + 0.13;
+		}
+		
+		if(score > 500 && score <= 599){
+			I.yVelocity = I.yVelocity + 0.13;
+			I.xVelocity = 8 * Math.cos(I.age * Math.PI / 80);
+		}
+	
 	};
-        
+    
 	I.explode = function() {
 		this.active = false;
 		score = score + 5;
@@ -142,6 +168,8 @@ var gameLoop = setInterval(function()
 }, 1000/fps);
 
 function update() {
+	if(playerUnit.cooldown > 0)
+		playerUnit.cooldown--;
 	if(keydown.space) {
 		playerUnit.shoot();
 	}
@@ -172,7 +200,7 @@ function update() {
 		return enemy.active;
 	});
 	
-	if(Math.random() < 0.10) {
+	if(Math.random() < 0.08) {
     enemies.push(Enemy());
 	}
 }
@@ -181,12 +209,12 @@ function update() {
 
 //**********************************
 //Drawing
-//**********************************    
+//**********************************    	
 
 playerUnit.shoot = function() {
 	var bulletPosition = this.midpoint();
-	
-	if(playerBullets.length < 1){	
+	if(playerBullets.length < 5 && playerUnit.cooldown === 0){	
+		playerUnit.cooldown = playerUnit.cooldown_time;
 		playerBullets.push(Bullet({
 			speed: 12,
 			x: bulletPosition.x,
@@ -245,7 +273,6 @@ function handleCollisions() {
 	
 	enemies.forEach(function(enemy) {
 		if(collides(enemy, playerUnit)) {
-			enemy.explode();
 			playerUnit.explode();
 		}
 	});
