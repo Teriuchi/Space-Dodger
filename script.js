@@ -14,10 +14,10 @@ var playerUnit = {
 	color: "white",
 	x: 310,
 	y: 560,
-	width: 30,
+	width: 28,
 	height: 27,
 	cooldown: 0,
-	cooldown_time: 20,
+	cooldown_time: 15,
 	draw: function(){
 		canvas.fillStyle = this.color;
 		canvas.fillRect(this.x, this.y, this.width, this.height);
@@ -93,8 +93,8 @@ function Enemy(I) {
 	I.xVelocity = 0;
 	I.yVelocity = 2;
         
-	I.width = 25;
-	I.height = 25;
+	I.width = 24;
+	I.height = 24;
         
 	I.inBounds = function() {
 		return I.x >= 0 && I.x <= Canvas_Width &&
@@ -121,17 +121,17 @@ function Enemy(I) {
 		}
 	
 		if(score > 200 && score <= 299){
-			I.yVelocity = I.yVelocity + 0.07;
-			I.xVelocity = 7 * Math.cos(I.age * Math.PI / 60);
+			I.yVelocity = I.yVelocity + 0.03;
+			I.xVelocity = 6 * Math.cos(I.age * Math.PI / 60);
 		}
 		
 		if(score > 300 && score <= 399){
-			I.yVelocity = I.yVelocity + 0.08;
+			I.yVelocity = I.yVelocity + 0.06;
 			I.xVelocity = 6 * Math.sin(I.age * Math.PI / 140);
 		}
 		
 		if(score > 400 && score <= 499){
-			I.yVelocity = I.yVelocity + 0.13;
+			I.yVelocity = I.yVelocity + 0.9;
 		}
 		
 		if(score > 500 && score <= 599){
